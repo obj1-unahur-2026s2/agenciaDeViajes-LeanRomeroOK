@@ -1,0 +1,39 @@
+import agenciaDeViajes.*
+
+describe "Test: Packs" {
+  test "Un pack nacional sin beneficios vigentes devuelve el mismo precio base." {
+    const packNacional1 = new PackNacional(duracion= 5, precio= 1000, destino= "Cordoba", coordinador= new Coordinador(cantidadDeViajesRealizados= 10, experiencia= 5, estaMotivado= true, rol= "Guia"))
+    assert.equals(1000, packNacional1.valorFinal())
+  }
+
+  test "Un pack nacional con 2 beneficios vigentes suma correctamente sus costos al precio base."{
+    const packNacional2 = new PackNacional(duracion= 7, precio= 1500, destino= "Mendoza", coordinador= new Coordinador(cantidadDeViajesRealizados= 15, experiencia= 7, estaMotivado= true, rol= "Asistente"))
+    const beneficio1 = new BeneficioEspecial(tipo= "Descuento en alojamiento", precio= 200, estaVigente= true)
+    const beneficio2 = new BeneficioEspecial(tipo= "Tour gratuito", precio= 150, estaVigente= true)
+    packNacional2.agregarBeneficio(beneficio1)
+    packNacional2.agregarBeneficio(beneficio2)
+    assert.equals(1850, packNacional2.valorFinal())
+  }
+
+  test "Un pack internacional sin beneficios vigentes calcula correctamente el total con el 20% de recargo."{
+    const packInternacional1 = new PackInternacional(duracion= 10, precio= 3000, destino= "Brasil", cantidadDeEscalas= 1, esLugarDeInteres= true, coordinador= new Coordinador(cantidadDeViajesRealizados= 20, experiencia= 10, estaMotivado= true, rol= "Acompañante"))
+    assert.equals(3600, packInternacional1.valorFinal())
+  }
+}
+
+describe "Test: Coordinadores"{
+    test "Un guía motivado con 21 viajes realizados es considerado altamente calificado."{
+        const coordinador1 = new Coordinador(cantidadDeViajesRealizados= 21, experiencia= 5, estaMotivado= true, rol= "Guia")
+        assert.that(coordinador1.esAltamenteCalificado())
+    }
+
+    test "Un asistente logístico con menos de 3 años de experiencia no es calificado, aunque tenga muchos viajes."{
+        const coordinador2 = new Coordinador(cantidadDeViajesRealizados= 25, experiencia= 2, estaMotivado= true, rol= "Asistente")
+        assert.notThat(coordinador2.esAltamenteCalificado())
+    }
+
+    test "Un acompañante con cualquier cantidad de viajes es siempre calificado si supera los 20."{
+        const coordinador3 = new Coordinador(cantidadDeViajesRealizados= 30, experiencia= 6, estaMotivado= false, rol= "Acompañante")
+        assert.that(coordinador3.esAltamenteCalificado())
+    }
+}
